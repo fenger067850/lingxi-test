@@ -7,9 +7,9 @@
     <style>
         :root {
             --primary-bg: linear-gradient(135deg, #fceaf0 0%, #e8f0ff 100%);
-            --card-bg: rgba(255, 255, 255, 0.7);
+            --card-bg: rgba(255, 255, 255, 0.75);
             --text-color: #4a4a4a;
-            --accent-color: #ff8e8e;
+            --accent-color: #ff7675;
         }
 
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
@@ -23,69 +23,85 @@
             justify-content: center;
             align-items: center;
             min-height: 100vh;
-            overflow-x: hidden;
         }
 
-        #app { width: 90%; max-width: 400px; position: relative; }
+        #app { width: 92%; max-width: 400px; }
 
-        /* 卡片通用样式 */
         .card {
             background: var(--card-bg);
-            backdrop-filter: blur(15px);
-            -webkit-backdrop-filter: blur(15px);
-            border-radius: 24px;
-            padding: 30px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
-            border: 1px solid rgba(255,255,255,0.3);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-radius: 28px;
+            padding: 40px 25px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.08);
+            border: 1px solid rgba(255,255,255,0.4);
             text-align: center;
             display: none;
-            animation: fadeIn 0.5s ease;
+            animation: slideUp 0.6s cubic-bezier(0.23, 1, 0.32, 1);
         }
 
         .active { display: block; }
 
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(20px); }
             to { opacity: 1; transform: translateY(0); }
         }
 
-        /* 首页样式 */
-        .home-title { font-size: 26px; font-weight: bold; margin-bottom: 15px; color: #ff7675; }
-        .home-desc { font-size: 14px; line-height: 1.6; color: #777; margin-bottom: 30px; }
-        .btn-start {
-            background: #ff7675;
+        .home-title { font-size: 28px; font-weight: bold; margin-bottom: 10px; color: var(--accent-color); letter-spacing: 2px; }
+        .result-tag { display: inline-block; padding: 4px 12px; background: var(--accent-color); color: white; border-radius: 20px; font-size: 12px; margin-bottom: 25px; }
+        
+        .input-group { margin: 30px 0; }
+        .v-code-input {
+            width: 85%;
+            padding: 15px;
+            border-radius: 15px;
+            border: 1px solid #eee;
+            text-align: center;
+            font-size: 18px;
+            letter-spacing: 4px;
+            outline: none;
+            background: rgba(255,255,255,0.8);
+            transition: all 0.3s;
+        }
+        .v-code-input:focus { border-color: var(--accent-color); background: #fff; box-shadow: 0 0 10px rgba(255,118,117,0.1); }
+        .tip-text { font-size: 13px; color: #999; margin-top: 12px; height: 20px; }
+
+        .btn-primary {
+            background: var(--accent-color);
             color: white;
             border: none;
-            padding: 15px 40px;
-            border-radius: 30px;
+            padding: 16px 50px;
+            border-radius: 35px;
             font-size: 18px;
-            box-shadow: 0 5px 15px rgba(255, 118, 117, 0.3);
+            font-weight: 600;
+            box-shadow: 0 8px 20px rgba(255, 118, 117, 0.3);
             cursor: pointer;
+            transition: all 0.3s;
         }
 
-        /* 题目样式 */
-        .progress-bar { width: 100%; height: 4px; background: #eee; border-radius: 2px; margin-bottom: 25px; }
-        .progress-inner { height: 100%; background: #ff7675; width: 0%; transition: width 0.3s; }
-        .question-text { font-size: 18px; font-weight: 600; margin-bottom: 25px; line-height: 1.4; }
+        /* 答题页进度 */
+        .progress-container { width: 100%; height: 6px; background: rgba(0,0,0,0.05); border-radius: 3px; margin-bottom: 30px; }
+        .progress-inner { height: 100%; background: var(--accent-color); width: 0%; transition: width 0.4s; border-radius: 3px; }
+        .question-text { font-size: 19px; font-weight: 600; margin-bottom: 30px; line-height: 1.5; color: #333; }
         .option {
-            background: white;
-            border: 1px solid #eee;
-            padding: 18px;
-            border-radius: 15px;
-            margin-bottom: 12px;
+            background: rgba(255,255,255,0.9);
+            padding: 20px;
+            border-radius: 18px;
+            margin-bottom: 15px;
             cursor: pointer;
             transition: all 0.2s;
             text-align: left;
-            font-size: 15px;
+            font-size: 16px;
+            border: 1px solid transparent;
         }
-        .option:active { background: #fff5f5; border-color: #ff7675; transform: scale(0.98); }
+        .option:active { background: #fff5f5; border-color: var(--accent-color); color: var(--accent-color); }
 
-        /* 结果页样式 */
-        .result-tag { display: inline-block; padding: 5px 15px; background: #ff7675; color: white; border-radius: 20px; font-size: 12px; margin-bottom: 10px; }
-        .result-title { font-size: 22px; font-weight: bold; margin-bottom: 20px; color: #333; }
-        .result-score { font-size: 40px; font-weight: 800; color: #ff7675; margin-bottom: 20px; }
-        .result-desc { text-align: left; font-size: 14px; line-height: 1.8; color: #555; background: rgba(255,255,255,0.4); padding: 15px; border-radius: 12px; }
-        .result-footer { margin-top: 25px; font-size: 12px; color: #999; border-top: 1px dashed #ccc; padding-top: 15px; }
+        /* 结果页 */
+        .result-score { font-size: 56px; font-weight: 900; color: var(--accent-color); margin: 10px 0; }
+        .result-title { font-size: 24px; font-weight: bold; margin-bottom: 20px; }
+        .result-desc { text-align: left; font-size: 15px; line-height: 1.8; color: #555; background: rgba(255,255,255,0.5); padding: 20px; border-radius: 15px; border: 1px solid rgba(255,255,255,0.5); }
+        .footer { margin-top: 30px; font-size: 13px; color: #888; border-top: 1px dashed #ccc; padding-top: 20px; }
+        .brand-name { color: var(--accent-color); font-weight: bold; }
     </style>
 </head>
 <body>
@@ -93,32 +109,38 @@
 <div id="app">
     <div id="page-home" class="card active">
         <div class="home-title">灵犀测试</div>
-        <div class="result-tag">正缘鉴定 · 灵魂共振</div>
-        <p class="home-desc">闭上眼，默念他的名字三遍<br>凭第一直觉，测测他到底是你的<br>“天选正缘”还是“人生过客”？</p>
-        <button class="btn-start" onclick="startTest()">开始测试</button>
+        <div class="result-tag">正缘鉴定 · 2026限定</div>
+        <p style="font-size: 15px; color: #666; line-height: 1.6;">闭上双眼，默念他的名字<br>输入“灵犀代码”开启缘分契约</p>
+        
+        <div class="input-group">
+            <input type="number" id="vCode" class="v-code-input" placeholder="请输入代码" oninput="checkInput()">
+            <div class="tip-text" id="errorMsg"></div>
+        </div>
+        
+        <button class="btn-primary" style="opacity: 0.5; cursor: not-allowed;" id="startBtn" disabled>开启测试</button>
     </div>
 
     <div id="page-quiz" class="card">
-        <div class="progress-bar"><div id="progress" class="progress-inner"></div></div>
+        <div class="progress-container"><div id="progress" class="progress-inner"></div></div>
         <div id="question" class="question-text"></div>
         <div id="options"></div>
     </div>
 
     <div id="page-result" class="card">
-        <div id="res-tag" class="result-tag">测试结果</div>
-        <div id="res-title" class="result-title"></div>
+        <div class="result-tag">测试报告</div>
         <div id="res-score" class="result-score"></div>
+        <div id="res-title" class="result-title"></div>
         <div id="res-desc" class="result-desc"></div>
-        <div class="result-footer">
-            长按截屏分享你的缘分百分比 ✨<br>
-            关注“凤歌在记录”获取更多灵感
+        <div class="footer">
+            ✨ 截图保存，查看你的宿命指引<br>
+            更多深度解析关注：<span class="brand-name">凤歌笔记</span>
         </div>
     </div>
 </div>
 
 <script>
     const questions = [
-        { q: "1. 脑海里浮现出对方的脸，第一眼你觉得他的眼睛里像藏着什么？", a: "深 invisible 的星辰大海", b: "让你想躲避的刺眼光芒" },
+        { q: "1. 脑海里浮现出对方的脸，第一眼你觉得他的眼睛里像藏着什么？", a: "深邃的星辰大海", b: "刺眼的光芒" },
         { q: "2. 如果你们一起去旅行，你更希望在哪个瞬间按下快门？", a: "对方回头看向你笑的瞬间", b: "对方认真看风景的背影" },
         { q: "3. 想象你们走进一家花店，你会选哪朵花送给这段关系？", a: "正在盛放但有刺的红玫瑰", b: "已经风干却依旧清香的木棉" },
         { q: "4. 当你们陷入沉默时，你的真实感受更接近哪种？", a: "即使不说话，空气也是温和舒适的", b: "觉得尴尬，总想找点话题填补空白" },
@@ -131,6 +153,29 @@
 
     let currentIdx = 0;
     let scoreA = 0;
+
+    function checkInput() {
+        const val = document.getElementById('vCode').value;
+        const btn = document.getElementById('startBtn');
+        const msg = document.getElementById('errorMsg');
+        
+        // 预设的正确代码
+        const validCodes = ['520', '888', '1314', '666'];
+        
+        if(validCodes.includes(val)) {
+            btn.disabled = false;
+            btn.style.opacity = "1";
+            btn.style.cursor = "pointer";
+            msg.innerText = "契约已激活";
+            msg.style.color = "#4CAF50";
+            btn.onclick = startTest;
+        } else {
+            btn.disabled = true;
+            btn.style.opacity = "0.5";
+            msg.innerText = val.length >= 3 ? "代码错误，请重试" : "";
+            msg.style.color = "#ff7675";
+        }
+    }
 
     function startTest() {
         showPage('page-quiz');
@@ -152,40 +197,26 @@
     function handleSelect(choice) {
         if(choice === 'a') scoreA++;
         currentIdx++;
-        if(currentIdx < questions.length) {
-            renderQuestion();
-        } else {
-            showResult();
-        }
+        setTimeout(() => {
+            if(currentIdx < questions.length) {
+                renderQuestion();
+            } else {
+                showResult();
+            }
+        }, 200);
     }
 
     function showResult() {
         showPage('page-result');
         let res = {};
         if(scoreA >= 8) {
-            res = {
-                title: "天选正缘 · 灵魂共振",
-                score: "99%",
-                desc: "你们的相遇是磁场的必然。在他面前你不需要伪装，那种‘不费力’的默契是跨越时空的重逢。大胆去爱吧，他是为你而来的。"
-            };
+            res = { title: "天选正缘 · 灵魂共振", score: "99%", desc: "你们的相遇是磁场的必然。在他面前你不需要伪装，那种‘不费力’的默契是跨越时空的重逢。大胆去爱吧，他是为你而来的。" };
         } else if(scoreA >= 5) {
-            res = {
-                title: "纯爱良缘 · 互补生长",
-                score: "80%",
-                desc: "他不仅是你的爱人，更是你的盔甲。虽然性格有异，但这种差异让你们更完整。只要坚定选择，这就是最稳固的正缘。"
-            };
+            res = { title: "纯爱良缘 · 互补生长", score: "80%", desc: "他不仅是你的爱人，更是你的盔甲。虽然性格有异，但这种差异让你们更完整。只要坚定选择，这就是最稳固的正缘。" };
         } else if(scoreA >= 3) {
-            res = {
-                title: "宿命羁绊 · 试炼之恋",
-                score: "60%",
-                desc: "强烈的吸引伴随着成长的阵痛。他出现在你生命里是为了教会你如何去爱。推倒心中的墙，烟火也能变成永恒。"
-            };
+            res = { title: "宿命羁绊 · 试炼之恋", score: "60%", desc: "强烈的吸引伴随着成长的阵痛。他出现在你生命里是为了教会你如何去爱。推倒心中的墙，烟火也能变成永恒。" };
         } else {
-            res = {
-                title: "萍水相逢 · 温柔过客",
-                score: "40%",
-                desc: "两个独立的灵魂意外擦肩。这段关系没有占有欲的沉重，只有轻盈的回忆。遇见他之后，你其实更爱自己了。"
-            };
+            res = { title: "萍水相逢 · 温柔过客", score: "40%", desc: "两个独立的灵魂意外擦肩。这段关系没有占有欲的沉重，只有轻盈的回忆。遇见他之后，你其实更爱自己了。" };
         }
         
         document.getElementById('res-title').innerText = res.title;
