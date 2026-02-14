@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <title>灵犀测试：他/她是你的正缘吗？</title>
+    <style>
+        :root {
+            --primary-bg: linear-gradient(135deg, #fceaf0 0%, #e8f0ff 100%);
+            --card-bg: rgba(255, 255, 255, 0.7);
+            --text-color: #4a4a4a;
+            --accent-color: #ff8e8e;
+        }
+
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        body {
+            margin: 0;
+            font-family: -apple-system, "Helvetica Neue", sans-serif;
+            background: var(--primary-bg);
+            background-attachment: fixed;
+            color: var(--text-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        #app { width: 90%; max-width: 400px; position: relative; }
+
+        /* 卡片通用样式 */
+        .card {
+            background: var(--card-bg);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border-radius: 24px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+            border: 1px solid rgba(255,255,255,0.3);
+            text-align: center;
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .active { display: block; }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* 首页样式 */
+        .home-title { font-size: 26px; font-weight: bold; margin-bottom: 15px; color: #ff7675; }
+        .home-desc { font-size: 14px; line-height: 1.6; color: #777; margin-bottom: 30px; }
+        .btn-start {
+            background: #ff7675;
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            border-radius: 30px;
+            font-size: 18px;
+            box-shadow: 0 5px 15px rgba(255, 118, 117, 0.3);
+            cursor: pointer;
+        }
+
+        /* 题目样式 */
+        .progress-bar { width: 100%; height: 4px; background: #eee; border-radius: 2px; margin-bottom: 25px; }
+        .progress-inner { height: 100%; background: #ff7675; width: 0%; transition: width 0.3s; }
+        .question-text { font-size: 18px; font-weight: 600; margin-bottom: 25px; line-height: 1.4; }
+        .option {
+            background: white;
+            border: 1px solid #eee;
+            padding: 18px;
+            border-radius: 15px;
+            margin-bottom: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: left;
+            font-size: 15px;
+        }
+        .option:active { background: #fff5f5; border-color: #ff7675; transform: scale(0.98); }
+
+        /* 结果页样式 */
+        .result-tag { display: inline-block; padding: 5px 15px; background: #ff7675; color: white; border-radius: 20px; font-size: 12px; margin-bottom: 10px; }
+        .result-title { font-size: 22px; font-weight: bold; margin-bottom: 20px; color: #333; }
+        .result-score { font-size: 40px; font-weight: 800; color: #ff7675; margin-bottom: 20px; }
+        .result-desc { text-align: left; font-size: 14px; line-height: 1.8; color: #555; background: rgba(255,255,255,0.4); padding: 15px; border-radius: 12px; }
+        .result-footer { margin-top: 25px; font-size: 12px; color: #999; border-top: 1px dashed #ccc; padding-top: 15px; }
+    </style>
+</head>
+<body>
+
+<div id="app">
+    <div id="page-home" class="card active">
+        <div class="home-title">灵犀测试</div>
+        <div class="result-tag">正缘鉴定 · 灵魂共振</div>
+        <p class="home-desc">闭上眼，默念他的名字三遍<br>凭第一直觉，测测他到底是你的<br>“天选正缘”还是“人生过客”？</p>
+        <button class="btn-start" onclick="startTest()">开始测试</button>
+    </div>
+
+    <div id="page-quiz" class="card">
+        <div class="progress-bar"><div id="progress" class="progress-inner"></div></div>
+        <div id="question" class="question-text"></div>
+        <div id="options"></div>
+    </div>
+
+    <div id="page-result" class="card">
+        <div id="res-tag" class="result-tag">测试结果</div>
+        <div id="res-title" class="result-title"></div>
+        <div id="res-score" class="result-score"></div>
+        <div id="res-desc" class="result-desc"></div>
+        <div class="result-footer">
+            长按截屏分享你的缘分百分比 ✨<br>
+            关注“凤歌在记录”获取更多灵感
+        </div>
+    </div>
+</div>
+
+<script>
+    const questions = [
+        { q: "1. 脑海里浮现出对方的脸，第一眼你觉得他的眼睛里像藏着什么？", a: "深 invisible 的星辰大海", b: "让你想躲避的刺眼光芒" },
+        { q: "2. 如果你们一起去旅行，你更希望在哪个瞬间按下快门？", a: "对方回头看向你笑的瞬间", b: "对方认真看风景的背影" },
+        { q: "3. 想象你们走进一家花店，你会选哪朵花送给这段关系？", a: "正在盛放但有刺的红玫瑰", b: "已经风干却依旧清香的木棉" },
+        { q: "4. 当你们陷入沉默时，你的真实感受更接近哪种？", a: "即使不说话，空气也是温和舒适的", b: "觉得尴尬，总想找点话题填补空白" },
+        { q: "5. 如果现在下起暴雨，你们共撑一把伞，你觉得伞会向谁倾斜？", a: "下意识地向你倾斜", b: "端端正正地撑在两人中间" },
+        { q: "6. 在梦里，如果他向你走来，你直觉他手里拿着什么？", a: "一束刚摘下的野花或食物", b: "一个装帧精美的礼盒" },
+        { q: "7. 如果要把你们的关系比作季节，你觉得现在最像？", a: "万物生长的春天", b: "绚烂但转瞬即逝的深秋" },
+        { q: "8. 当你遇到委屈想哭时，想到他，你的第一反应是？", a: "想立刻钻进他怀里", b: "想擦干眼泪再见他" },
+        { q: "9. 如果你现在需要他的一项超能力，你最想要：", a: "瞬间出现在你身边的“闪现”", b: "永远不会对你撒谎的“真言术”" }
+    ];
+
+    let currentIdx = 0;
+    let scoreA = 0;
+
+    function startTest() {
+        showPage('page-quiz');
+        renderQuestion();
+    }
+
+    function renderQuestion() {
+        const q = questions[currentIdx];
+        document.getElementById('question').innerText = q.q;
+        document.getElementById('progress').style.width = ((currentIdx + 1) / questions.length * 100) + '%';
+        
+        const optHtml = `
+            <div class="option" onclick="handleSelect('a')">${q.a}</div>
+            <div class="option" onclick="handleSelect('b')">${q.b}</div>
+        `;
+        document.getElementById('options').innerHTML = optHtml;
+    }
+
+    function handleSelect(choice) {
+        if(choice === 'a') scoreA++;
+        currentIdx++;
+        if(currentIdx < questions.length) {
+            renderQuestion();
+        } else {
+            showResult();
+        }
+    }
+
+    function showResult() {
+        showPage('page-result');
+        let res = {};
+        if(scoreA >= 8) {
+            res = {
+                title: "天选正缘 · 灵魂共振",
+                score: "99%",
+                desc: "你们的相遇是磁场的必然。在他面前你不需要伪装，那种‘不费力’的默契是跨越时空的重逢。大胆去爱吧，他是为你而来的。"
+            };
+        } else if(scoreA >= 5) {
+            res = {
+                title: "纯爱良缘 · 互补生长",
+                score: "80%",
+                desc: "他不仅是你的爱人，更是你的盔甲。虽然性格有异，但这种差异让你们更完整。只要坚定选择，这就是最稳固的正缘。"
+            };
+        } else if(scoreA >= 3) {
+            res = {
+                title: "宿命羁绊 · 试炼之恋",
+                score: "60%",
+                desc: "强烈的吸引伴随着成长的阵痛。他出现在你生命里是为了教会你如何去爱。推倒心中的墙，烟火也能变成永恒。"
+            };
+        } else {
+            res = {
+                title: "萍水相逢 · 温柔过客",
+                score: "40%",
+                desc: "两个独立的灵魂意外擦肩。这段关系没有占有欲的沉重，只有轻盈的回忆。遇见他之后，你其实更爱自己了。"
+            };
+        }
+        
+        document.getElementById('res-title').innerText = res.title;
+        document.getElementById('res-score').innerText = res.score;
+        document.getElementById('res-desc').innerText = res.desc;
+    }
+
+    function showPage(id) {
+        document.querySelectorAll('.card').forEach(p => p.classList.remove('active'));
+        document.getElementById(id).classList.add('active');
+    }
+</script>
+
+</body>
+</html>
